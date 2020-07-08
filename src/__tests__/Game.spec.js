@@ -19,16 +19,5 @@ describe("Game", () => {
         expect(tree).toMatchSnapshot();
     });
 
-    it('should set the gameStatus to active when there is seconds and available numbers left', function () {
-        const state = {
-            stars: 9,
-            available: utils.range(1, 9),
-            candidates: [],
-            secondsLeft: 10,
-        }
-        const wrapper = shallow(<Game {...state} />);
-        console.log(wrapper);
-    });
-
 })
 
