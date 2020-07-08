@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PlayAgain should match snapshot 1`] = `
+<div
+  className="game-done"
+>
+  <div
+    className="message"
+    style={
+      Object {
+        "color": "red",
+      }
+    }
+  >
+    Game Over
+  </div>
+  <button>
+    Play Again
+  </button>
+</div>
+`;

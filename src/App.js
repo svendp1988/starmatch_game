@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import {Game} from "./Game"
+import StarMatch from "./StarMatch"
 
 class App extends React.Component{
     render() {
         return (
         <div className="App">
-          <Game />
+          <StarMatch />
         </div>
       );
     }
