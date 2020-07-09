@@ -6,7 +6,7 @@ import {utils} from "./utils";
 import PlayAgain from "./PlayAgain";
 import {useGameState} from "./useGameState";
 
-function Game(props) {
+const Game = (props) => {
     const numberOfButtons = 9;
     const {
         stars,
