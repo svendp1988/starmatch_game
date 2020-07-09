@@ -43,5 +43,7 @@ describe("Game", () => {
         container.find("[number=4]").simulate("click");
         expect(container.find("[number=4]").props().status).toEqual("used");
     });
+
+    /* in general not sure on how to manipulate the state of this component to control the flow of tests */
 })
 
