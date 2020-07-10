@@ -6,15 +6,20 @@ import {utils} from "./utils";
 import PlayAgain from "./PlayAgain";
 
 class Game extends React.Component {
-    state = {
-        stars: utils.random(1, 9),
-        available: utils.range(1, 9),
-        candidates: [],
-        secondsLeft: 10,
-        gameStatus: "active"
+    constructor(props) {
+        super(props);
+        this.state = {
+            stars: utils.random(1, 9),
+            available: utils.range(1, 9),
+            candidates: [],
+            secondsLeft: 10,
+            gameStatus: "active"
+        }
+        this.numberOfButtons = 9;
+        this.myInterval = "";
     }
-    numberOfButtons = 9;
-    myInterval;
+    // numberOfButtons = 9;
+    // myInterval;
 
     componentDidMount() {
         this.myInterval = setInterval(() => {
