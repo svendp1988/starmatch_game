@@ -35,4 +35,14 @@ describe("PlayAgain", () => {
         expect(messageBox.text()).toEqual("Well played!");
         expect(messageBox.props().style).toEqual({ color: "green" });
     });
+
+    it('should call the onClick-handler', function () {
+        const props = {
+            gameStatus: "won"
+        }
+        const handleClick = jest.fn();
+        const wrapper = shallow(<PlayAgain {...props} onClick={handleClick}/>);
+        wrapper.find("button").simulate("click");
+        expect(handleClick).toHaveBeenCalled();
+    });
 })

@@ -21,7 +21,21 @@ describe('PlayNumber', function () {
 
         const button = wrapper.get(0);
         expect(button).toHaveProperty("type", "button");
+        console.log(wrapper.find("button").props());
+        expect(wrapper.find("button").prop("style")).toEqual({"backgroundColor": "lightgray"});
         expect(button.props.style).toEqual({ backgroundColor: 'lightgray' });
         expect(wrapper.text()).toBe("14");
     })
+
+    it('should should call the onClick-handler', function () {
+        const props = {
+            number: 14,
+            status: "available"
+        };
+        const handleClick = jest.fn();
+        const wrapper = shallow(<PlayNumber {...props} onClick={handleClick}/>);
+        wrapper.find("button").simulate('click');
+        expect(handleClick).toHaveBeenCalled();
+        expect(handleClick).toHaveBeenCalledWith(14, "available");
+    });
 });

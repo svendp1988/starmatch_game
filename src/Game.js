@@ -4,69 +4,116 @@ import {PlayNumber} from "./PlayNumber";
 import {StarsDisplay} from "./StarsDisplay";
 import {utils} from "./utils";
 import PlayAgain from "./PlayAgain";
-import {useGameState} from "./useGameState";
 
-const Game = (props) => {
-    const numberOfButtons = 9;
-    const {
-        stars,
-        available,
-        candidates,
-        secondsLeft,
-        setGameState
-    } = useGameState();
+class Game extends React.Component {
+    state = {
+        stars: utils.random(1, 9),
+        available: utils.range(1, 9),
+        candidates: [],
+        secondsLeft: 10,
+        gameStatus: "active"
+    }
+    numberOfButtons = 9;
+    myInterval;
 
-    const determineStatus = (number) => {
-        if (!available.includes(number)) {
+    componentDidMount() {
+        this.myInterval = setInterval(() => {
+            this.setState(({secondsLeft}) => ({
+                secondsLeft: secondsLeft - 1
+            }))
+        }, 1000)
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.secondsLeft === 0 || this.state.gameStatus !== "active") {
+            clearInterval(this.myInterval);
+        }
+    }
+
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        if (prevState.available.length > this.state.available.length || prevState.secondsLeft > this.state.secondsLeft) {
+            const gameStatus = this.state.available.length === 0
+                ? "won"
+                : this.state.secondsLeft === 0
+                    ? "lost"
+                    : "active";
+            this.setState({
+                gameStatus
+            })
+        }
+        return null;
+    }
+
+
+    setGameState = (newCandidates) => {
+        if (utils.sum(newCandidates) !== this.state.stars) {
+            this.setState({
+                candidates: newCandidates
+            })
+        } else {
+            const newAvailables = this.state.available.filter(
+                num => !newCandidates.includes(num)
+            );
+            this.setState({
+                stars: utils.randomSumIn(newAvailables, 9),
+                available: newAvailables,
+                candidates: [],
+            })
+        }
+    }
+
+
+    determineStatus = (number) => {
+        if (!this.state.available.includes(number)) {
             return "used";
         }
-        if (candidates.includes(number)) {
-            return candidatesAreWrong ? "wrong" : "candidate";
+        if (this.state.candidates.includes(number)) {
+            return this.candidatesAreWrong ? "wrong" : "candidate";
         }
         return "available";
     }
 
-    const candidatesAreWrong = utils.sum(candidates) > stars;
-    const gameStatus = available.length === 0
-        ? "won"
-        : secondsLeft === 0
-            ? "lost"
-            : "active";
+    candidatesAreWrong = utils.sum(this.state.candidates) > this.state.stars;
 
-    const handleClick = (number, status) => {
-        if (gameStatus !== "active" || status === "used") {
+
+    handleClick = (number, status) => {
+        if (this.state.gameStatus !== "active" || status === "used") {
             return;
         }
         const newCandidates =
             status === "available"
-                ? candidates.concat(number)
-                : candidates.filter(candidateNum => candidateNum !== number);
-        setGameState(newCandidates);
+                ? this.state.candidates.concat(number)
+                : this.state.candidates.filter(candidateNum => candidateNum !== number);
+        this.setGameState(newCandidates);
     }
 
-    return (
-        <div className="game">
-            <div className="help">
-                Pick 1 or more numbers that sum to the number of stars
-            </div>
-            <div className="body">
-                <div className="left">
-                    {gameStatus !== "active" ? <PlayAgain onClick={props.resetGame} gameStatus={gameStatus}/> : <StarsDisplay count={stars}/>}
+    render() {
+        return (
+            <div className="game">
+                <div className="help">
+                    Pick 1 or more numbers that sum to the number of stars
                 </div>
-                <div className="right">
-                    {utils.range(1, numberOfButtons)
-                        .map(number =>
-                            <PlayNumber
-                                key={number}
-                                number={number}
-                                onClick={handleClick}
-                                status={determineStatus(number)}
-                            />)}
+                <div className="body">
+                    <div className="left">
+                        {this.state.gameStatus !== "active" ?
+                            <PlayAgain onClick={this.props.resetGame} gameStatus={this.state.gameStatus}/> :
+                            <StarsDisplay count={this.state.stars}/>}
+                    </div>
+                    <div className="right">
+                        {utils.range(1, this.numberOfButtons)
+                            .map(number =>
+                                <PlayNumber
+                                    key={number}
+                                    number={number}
+                                    onClick={this.handleClick}
+                                    status={this.determineStatus(number)}
+                                />)}
+                    </div>
                 </div>
+                <div data-testid="timer" className="timer">Time Remaining: {this.state.secondsLeft}</div>
             </div>
-            <div className="timer">Time Remaining: {secondsLeft}</div>
-        </div>
-    )
+        )
+    }
 }
 
 // export class Game extends React.Component {
